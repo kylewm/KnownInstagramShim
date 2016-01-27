@@ -7,6 +7,12 @@
 
             function registerPages()
             {
+                // Auth URL
+                \Idno\Core\Idno::site()->addPageHandler('account/instagramshim', '\IdnoPlugins\InstagramShim\Pages\Account');
+
+                // Template extensions
+                \Idno\Core\Idno::site()->template()->extendTemplate('account/menu/items', 'account/instagramshim/menu');
+
             }
 
             function registerEventHooks()
@@ -36,7 +42,12 @@
                         }
                         foreach ($syndication as $url) {
                             if (preg_match('/https?:\/\/(?:www\.)?instagram.com\/p\/([a-zA-Z0-9_\-]+)/i', $url, $matches)) {
-                                $object->setPosseLink('instagram', $url, 'kylewmahan', $matches[1], 'kylewmahan');
+                                $user = \Idno\Core\Idno::site()->session()->currentUser();
+                                $account = '';
+                                if (!empty($user) && !empty($user->instagram_account)) {
+                                    $account = $user->instagram_account;
+                                }
+                                $object->setPosseLink('instagram', $url, $account, $matches[1], $account);
                                 $changed = true;
                             }
                         }
