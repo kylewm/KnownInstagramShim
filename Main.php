@@ -17,6 +17,7 @@
                     // unfortunately micropub and Known use "syndication" to mean two different things, so
                     // we'll stash the incoming syndication value somewhere safe.
                     $syndication = $page->getInput('syndication');
+                    \Idno\Core\Idno::site()->logging()->log("started indiepub with syndication input: $syndication", LOGLEVEL_DEBUG);
                     if (!empty($syndication)) {
                         $page->setInput('igshim_syndication', $syndication);
                     }
@@ -25,8 +26,10 @@
                     $data = $evt->data();
                     $page = $data['page'];
                     $object = $data['object'];
-
                     $syndication = $page->getInput('igshim_syndication');
+                    \Idno\Core\Idno::site()->logging()->log("finished indiepub with syndication input: $syndication", LOGLEVEL_DEBUG);
+
+                    $changed = false;
                     if (!empty($syndication)) {
                         if (!is_array($syndication)) {
                             $syndication = [$syndication];
@@ -34,8 +37,12 @@
                         foreach ($syndication as $url) {
                             if (preg_match('/https?:\/\/(?:www\.)?instagram.com\/p\/([a-zA-Z0-9_\-]+)/i', $url, $matches)) {
                                 $object->setPosseLink('instagram', $url, 'kylewmahan', $matches[1], 'kylewmahan');
+                                $changed = true;
                             }
                         }
+                    }
+                    if ($changed) {
+                        $object->save();
                     }
                 });
             }
