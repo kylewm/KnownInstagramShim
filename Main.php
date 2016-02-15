@@ -5,6 +5,8 @@
         class Main extends \Idno\Common\Plugin
         {
 
+            const INSTAGRAM_REGEX = '/https?:\/\/(?:www\.)?instagram.com\/p\/([a-zA-Z0-9_\-]+)/i';
+
             function registerPages()
             {
                 // Auth URL
@@ -41,12 +43,15 @@
                             $syndication = [$syndication];
                         }
                         foreach ($syndication as $url) {
-                            if (preg_match('/https?:\/\/(?:www\.)?instagram.com\/p\/([a-zA-Z0-9_\-]+)/i', $url, $matches)) {
+                            if (preg_match(self::INSTAGRAM_REGEX, $url, $matches)) {
                                 $user = \Idno\Core\Idno::site()->session()->currentUser();
                                 $account = '';
                                 if (!empty($user) && !empty($user->instagram_account)) {
                                     $account = $user->instagram_account;
                                 }
+                                // remove low-quality posse links
+                                unset($object->posse['www.instagram.com']);
+                                unset($object->posse['instagram.com']);
                                 $object->setPosseLink('instagram', $url, $account, $matches[1], $account);
                                 $changed = true;
                             }
