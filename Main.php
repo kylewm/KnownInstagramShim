@@ -25,7 +25,7 @@
                     // unfortunately micropub and Known use "syndication" to mean two different things, so
                     // we'll stash the incoming syndication value somewhere safe.
                     $syndication = $page->getInput('syndication');
-                    \Idno\Core\Idno::site()->logging()->log("started indiepub with syndication input: $syndication", LOGLEVEL_DEBUG);
+                    \Idno\Core\Idno::site()->logging()->debug("started indiepub with syndication input: $syndication");
                     if (!empty($syndication)) {
                         $page->setInput('igshim_syndication', $syndication);
                     }
@@ -35,14 +35,11 @@
                     $page = $data['page'];
                     $object = $data['object'];
                     $syndication = $page->getInput('igshim_syndication');
-                    \Idno\Core\Idno::site()->logging()->log("finished indiepub with syndication input: $syndication", LOGLEVEL_DEBUG);
+                    \Idno\Core\Idno::site()->logging()->debug("finished indiepub with syndication input: $syndication");
 
                     $changed = false;
                     if (!empty($syndication)) {
-                        if (!is_array($syndication)) {
-                            $syndication = [$syndication];
-                        }
-                        foreach ($syndication as $url) {
+                        foreach ((array) $syndication as $url) {
                             if (preg_match(self::INSTAGRAM_REGEX, $url, $matches)) {
                                 $user = \Idno\Core\Idno::site()->session()->currentUser();
                                 $account = '';
@@ -52,6 +49,7 @@
                                 // remove low-quality posse links
                                 unset($object->posse['www.instagram.com']);
                                 unset($object->posse['instagram.com']);
+                                unset($object->posse['instagram']);
                                 $object->setPosseLink('instagram', $url, $account, $matches[1], $account);
                                 $changed = true;
                             }
