@@ -11,6 +11,12 @@ the incoming micropub post and set the URL so it shows up as a
 `u-syndication` property (which also helps Bridgy find it to backfeed
 likes and comments).
 
+# Installation
+
+Download and place this plugin in `IdnoPlugins/InstagramShim`. It must be
+named InstagramShim (rather than KnownInstagramShim), or Known will 
+not be able to find it.
+
 ## License
 
 This software is dedicated to the public domain under Creative Commons [CC0][].
